@@ -5,36 +5,86 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dsydelny <dsydelny@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/12 14:38:46 by dsydelny          #+#    #+#             */
-/*   Updated: 2024/05/12 14:47:24 by dsydelny         ###   ########.fr       */
+/*   Created: 2024/05/14 21:30:38 by dsydelny          #+#    #+#             */
+/*   Updated: 2024/05/14 21:30:39 by dsydelny         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SCALARCONVERTER_HPP
 # define SCALARCONVERTER_HPP
 
-# include <iostream>
+#include <iostream>
+#include <fstream>
+#include <limits>
 
-class ScalarConverter
-{
-	
-    private:
-        char    _c;
-        int     _n;
-        float   _f;
-        double  _d;
+enum e_type {
+    NONE,
+    INT,
+    FLOAT,
+    CHAR,
+    DOUBLE,
+    LITERALS
+};
 
-        bool    _impossible;
+class ScalarConverter {
 
-        std::string _str;
-        // e_type      _type;
-    public:
-        ScalarConverter();
-        ScalarConverter(const ScalarConverter& src);
-        ScalarConverter& operator=(const ScalarConverter& rhs);
-        ~ScalarConverter();
+private:
+    char    _c;
+    int     _n;
+    float   _f;
+    double  _d;
 
-	
-}
+    bool    _impossible;
+
+    std::string _str;
+    e_type      _type;
+
+public:
+    ScalarConverter( void );
+    ScalarConverter( const ScalarConverter& src );
+    ~ScalarConverter( void );
+
+    ScalarConverter& operator=( const ScalarConverter& rhs );
+
+    char    getC( void ) const;
+    void    setC( char c );
+
+    int     getI( void ) const;
+    void    setI( int n );
+
+    float   getF( void ) const;
+    void    setF( float f );
+
+    double  getD( void ) const;
+    void    setD( double d );
+
+    void    convert( void );
+
+    void    setStr( std::string str );
+    std::string    getStr( void ) const;
+
+    e_type  getType( void ) const;
+    void    setType( void );
+
+    bool    isChar( void ) const;
+    bool    isInt( void ) const;
+    bool    isFloat( void ) const;
+    bool    isDouble( void ) const;
+
+    bool    isImpossible( void );
+
+    void    printChar( void ) const ;
+    void    printInt( void ) const ;
+    void    printFloat( void ) const ;
+    void    printDouble( void ) const ;
+
+    bool    isLiterals( void ) const;
+
+    class ScalarConverterException : public std::exception {
+        virtual const char* what() const throw() { return "Unknown type"; }
+    };
+};
+
+std::ostream& operator<<( std::ostream& out, const ScalarConverter& rhs );
 
 #endif
