@@ -1,32 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ScalarConverter.hpp                                :+:      :+:    :+:   */
+/*   Serializer.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dsydelny <dsydelny@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/18 17:48:30 by dsydelny          #+#    #+#             */
-/*   Updated: 2024/05/18 18:10:17 by dsydelny         ###   ########.fr       */
+/*   Created: 2024/05/19 20:54:32 by dsydelny          #+#    #+#             */
+/*   Updated: 2024/05/19 20:54:32 by dsydelny         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SCALARCONVERTER_HPP
-#define SCALARCONVERTER_HPP
+#ifndef SERIALIZER_HPP
+#define SERIALIZER_HPP
 
-#include <iostream>
-#include <climits>
-#include <sstream> 
+#include <stdint.h>
+#include <string>
 
-class ScalarConverter {
-    
+typedef struct t_Data
+{
+    std::string a = "coucou<3";
+    int         i = 7878;
+} Data;
+
+class Serializer {
+
     private:
-        ScalarConverter();
-        ScalarConverter(ScalarConverter const & src);
-        ScalarConverter & operator=(ScalarConverter const & rhs);
-        ~ScalarConverter();
-        
+        Serializer();
+
     public:
-        static void convert(std::string input);
+        static uintptr_t serialize(Data* ptr);
+        static Data* deserialize(uintptr_t raw);
+        Serializer(Serializer const & src);
+        Serializer & operator=(Serializer const & rhs);
+        ~Serializer();
 };
 
 #endif

@@ -4,27 +4,21 @@ SRC			=	ScalarConverter.cpp main.cpp
 
 OBJS		=	$(SRC:.cpp=.o)
 
-COMPILE		=	clang++
+CPP		=	c++
 
-FLAGS		=	-Wall -Wextra -Werror -g3 -std=c++98
+FLAGS	=	-Wall -Wextra -Werror -std=c++98
 
-EXE_NAME	=	-o ScalarConventer
+all:		$(NAME)
 
-EXEC		=	ScalarConventer
-
-
-all: $(NAME)
-
-$(NAME): $(OBJS)
-	$(COMPILE) $(FLAGS) $(OBJS) $(EXE_NAME)
-
-.cpp.o:
-	${COMPILE} ${FLAGS} -c $< -o ${<:.cpp=.o}
+$(NAME):	$(OBJS)
+	$(CPP) $(FLAGS) -o $(NAME) $(OBJS)
 
 clean:
-	rm -rf $(OBJS)
+	rm -f $(OBJS)
 
-fclean: clean
-	rm -rf $(EXEC)
-	
-re:	fclean all
+fclean:		clean
+	rm -f $(NAME)
+
+re:			fclean all
+
+.PHONY:		all clean fclean re

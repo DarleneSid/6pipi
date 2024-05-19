@@ -5,280 +5,115 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dsydelny <dsydelny@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/14 21:30:23 by dsydelny          #+#    #+#             */
-/*   Updated: 2024/05/14 21:30:23 by dsydelny         ###   ########.fr       */
+/*   Created: 2024/05/18 17:48:27 by dsydelny          #+#    #+#             */
+/*   Updated: 2024/05/19 20:28:09 by dsydelny         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "ScalarConverter.hpp"
 
-ScalarConverter::ScalarConverter( void ) {
-    this->_c = '\0';
-    this->_n = 0;
-    this->_f = 0.0f;
-    this->_d = 0.0;
+ScalarConverter::ScalarConverter() {}
+ScalarConverter::ScalarConverter(ScalarConverter const & src) {
+	*this = src;
+}
+ScalarConverter & ScalarConverter::operator=(ScalarConverter const & rhs) {
+	if (this != &rhs) {}
+	return (*this);
+}
+ScalarConverter::~ScalarConverter() {}
+
+std::string isPrintableChar(std::string input) {
+	int i = 0;
+	try
+	{
+		i = std::stoi(input);
+		if (i > static_cast<int>(CHAR_MAX) || i < static_cast<int>(CHAR_MIN))
+			return ("NOT PRINTABLE");
+	}
+	catch(const std::exception& e){
+		return ("NOT PRINTABLE");
+	}
+	char chr = static_cast<char>(i);
+	if (std::isprint(chr))
+		return (std::string("'") + chr + std::string("'"));
+	else
+		return ("NOT PRINTABLE");
 }
 
-ScalarConverter::ScalarConverter( const ScalarConverter& src ) {
-    *this = src;
+std::string isInt(std::string input) {
+	try {
+		int num = std::stoi(input);
+		return std::to_string(num);
+	} 
+	catch (...) {
+		return "NOT PRINTABLE";
+	}
 }
 
-ScalarConverter::~ScalarConverter( void ) {}
-
-ScalarConverter& ScalarConverter::operator=( const ScalarConverter& rhs ) {
-    if ( this != &rhs ) {
-        this->_n = rhs.getI();
-        this->_f = rhs.getF();
-        this->_c = rhs.getC();
-    }
-    return *this;
+std::string isFloat(std::string input) {
+	try {
+		float flo = std::stof(input);
+		return (std::to_string(flo).substr(0, std::to_string(flo).find('.') + 2) + "f");
+	} catch (...) {
+		return "nanf";
+	}
 }
 
-char    ScalarConverter::getC( void ) const {
-    return this->_c;
+std::string isDouble(std::string input) {
+	try {
+		double dbl = std::stod(input);
+		return (std::to_string(dbl).substr(0, std::to_string(dbl).find('.') + 2));
+	} catch (...) {
+		return "nan";
+	}
 }
 
-void    ScalarConverter::setC( char c ) {
-    this->_c = c;
-}
+void ScalarConverter::convert(std::string input) {
+	std::string str = input;
+	if (!isprint(input[0]))
+		return (std::cout << "NOT VALID INPUT" << std::endl, void());
+	if(input.size() == 1){
+		if(!isdigit(input[0])){
+			int i = static_cast<int> (input[0]);
+			input = std::to_string(i);
+		}
+	}
+	try 
+	{
+		size_t pos;
+		std::stof(input, &pos);
+		if ((pos != input.length() && pos != input.length() - 1)
+			|| (pos == input.length() - 1
+			&& input[pos] != 'f'
+			&& input[pos] != 'F')) {
+				return (std::cout << "NOT VALID INPUT" << std::endl, void());
+		}
+	}
+	catch(const std::exception& e)
+	{
+		return (std::cout << "NOT VALID INPUT" << std::endl, void());
+	}
 
-bool    ScalarConverter::isLiterals( void ) const {
-    if ( ( _impossible ) || ( _str.compare( "nan" ) == 0 ) || ( _str.compare( "nanf" ) == 0 )
-        || ( _str.compare( "+inf" ) == 0 ) || ( _str.compare( "+inff" ) == 0 ) 
-        || ( _str.compare( "-inf" ) == 0 ) || ( _str.compare( "-inff" ) == 0 ) 
-        || ( _str.compare( "-inff" ) == 0 ) || ( _str.compare( "-inff" ) == 0 )  
-        || ( _str.compare( "+inff" ) == 0 ) || ( _str.compare( "+inff" ) == 0 ) ) {
-            return true;
-    } 
-    return false;
-}
+	if (input.compare("nan") == 0 || input.compare("nanf") == 0
+		|| input.compare("inf") == 0 || input.compare("inff") == 0
+		|| input.compare("+inf") == 0 || input.compare("+inff") == 0
+		|| input.compare("-inf") == 0 || input.compare("-inff") == 0) {
+			std::cout << "char: impossible" << std::endl;
+			std::cout << "int: impossible" << std::endl;
+			if (input.compare("nan") == 0 || input.compare("nanf") == 0)
+				std::cout << "float: nanf" << std::endl;
+			if(input.compare("inf") == 0 || input.compare("inff") == 0
+				|| input.compare("+inf") == 0 || input.compare("+inff") == 0
+				|| input.compare("-inf") == 0 || input.compare("-inff") == 0)
+				std::cout << "float: "<< input << std::endl;
+			std::cout << "double: " << input << std::endl;
 
-void    ScalarConverter::printChar( void ) const {
-    if ( this->isLiterals() || ( !std::isprint( _n ) && ( _n >= 127 ) ) ) {
-        std::cout << "Impossible";
-    } else if ( !std::isprint( this->_n ) ) {
-        std::cout << "None displayable";
-    } else {
-        std::cout << "'" << getC() << "'";
-    }
-    std::cout << std::endl;
-}
+			return;
+	}
 
-int    ScalarConverter::getI( void ) const {
-    return this->_n;
-}
-
-void    ScalarConverter::setI( int n ) {
-    this->_n = n;
-}
-
-void    ScalarConverter::printInt( void ) const {
-    if ( this->isLiterals() || ( !std::isprint( _n ) && ( _n >= 127 ) ) ) {
-        std::cout << "Impossible";
-    } else {
-        std::cout << getI();
-    }
-    std::cout << std::endl;
-}
-
-float   ScalarConverter::getF( void ) const {
-    return this->_f;
-}
-
-void    ScalarConverter::setF( float f ) {
-    this->_f = f;
-}
-
-double  ScalarConverter::getD( void ) const {
-
-    return this->_d;
-}
-
-void    ScalarConverter::setD( double d ) {
-    this->_d = d;
-}
-
-std::string ScalarConverter::getStr( void ) const {
-    return this->_str;
-}
-
-void ScalarConverter::setStr( std::string str ) {
-    this->_str = str;
-    this->setType();
-    if ( getType() == NONE ) {
-        throw ScalarConverter::ScalarConverterException();
-    }
-}
-
-e_type  ScalarConverter::getType( void ) const {
-    return this->_type;
-}
-
-bool    ScalarConverter::isChar( void ) const {
-    return _str.length() == 1 && std::isalpha( _str[0] ) && std::isprint( _str[0] );
-}
-
-bool    ScalarConverter::isInt( void ) const {
-    int    j = 0;
-    if ( _str[j] == '-' || _str[j] == '+' )
-        j++;
-    for ( int i( j ); i < ( int ) _str.length(); i++ ) {
-        if ( !std::isdigit( _str[i] ) )
-            return false;
-    }
-    return true;
-}
-
-bool ScalarConverter::isDouble( void ) const {
-
-    if ( _str.find( '.' ) == std::string::npos || _str.find( '.' ) == 0 
-        || _str.find( '.' ) == _str.length() - 1 )
-        return false;
-    int j = 0;
-    int found = 0;
-    if ( _str[j] == '-' || _str[j] == '+' )
-        j++;
-    for ( int i( j ); i < ( int ) _str.length(); i++ ) {
-        if ( _str[i] == '.' )
-            found++;
-        if ( ( !std::isdigit( _str[i] ) && _str[i] != '.' ) || found > 1 )
-            return false;
-    }
-
-    return true;
-}
-
-bool    ScalarConverter::isFloat ( void ) const {
-
-    if ( _str.find( '.' ) == std::string::npos || _str.back() != 'f' 
-        || _str.find( '.' ) == 0 || _str.find( '.' ) == _str.length() - 2 )
-        return false;
-    int found = 0;
-    int j = 0;
-    if ( _str[j] == '-' || _str[j] == '+' )
-        j++;
-    for ( int i( j ); i < ( int ) _str.length() - 1; i++ ) {
-        if ( _str[i] == '.' )
-            found++;
-        if ( ( !std::isdigit( _str[i] ) && _str[i] != '.' ) || found > 1 )
-            return false;
-    }
-
-    return true;
-}
-
-void    ScalarConverter::printFloat( void ) const {
-    if ( _str.compare( "nan" ) == 0 || _str.compare( "nanf" ) == 0 ) {
-        std::cout << "nanf";
-    } else if ( _str.compare( "+inff" ) == 0 || _str.compare( "+inf" ) == 0 ) {
-        std::cout << "+inff";
-    } else if ( _str.compare( "-inff" ) == 0 || _str.compare( "-inf" ) == 0 ) {
-        std::cout << "-inff";
-    } else if ( _impossible ) {
-        std::cout << "Impossible";
-    } else {
-        if ( _f - static_cast< int > ( _f ) == 0 ) {
-            std::cout << _f << ".0f";
-        } else {
-            std::cout << getF() << "f";
-        }
-    }
-    std::cout << std::endl;
-}
-
-void    ScalarConverter::printDouble( void ) const {
-    if ( _str.compare( "nan" ) == 0 || _str.compare( "nanf" ) == 0 ) {
-        std::cout << "nan";
-    } else if ( _str.compare( "+inff" ) == 0 || _str.compare( "+inf" ) == 0 ) {
-        std::cout << "+inf";
-    } else if ( _str.compare( "-inff" ) == 0 || _str.compare( "-inf" ) == 0 ) {
-        std::cout << "-inf";
-    } else if ( _impossible ) {
-        std::cout << "Impossible";
-    } else {
-        if ( _d - static_cast< int > ( _d ) == 0 ) {
-            std::cout << _d << ".0";
-        } else {
-            std::cout << getD() << "f";
-        }
-    }
-    std::cout << std::endl;
-
-}
-
-void    ScalarConverter::setType( void ) {
-    if ( isChar() ) {
-        _type = CHAR;
-    } else if ( isInt() ) {
-        _type = INT;
-    } else if ( isFloat() ) {
-        _type = FLOAT;
-    } else if ( isDouble() ) {
-        _type = DOUBLE;
-    } else if ( isLiterals() ) {
-        _type = LITERALS;
-    } else {
-        _type = NONE;
-    }
-}
-
-bool    ScalarConverter::isImpossible( void ) {
-    try
-    {
-        if ( _type == INT ) {
-            _n = std::stoi( _str );
-        } else if ( _type == FLOAT ) {
-            _f = std::stof( _str );
-        } else if ( _type == DOUBLE ) {
-            _d = std::stod( _str );
-        }
-    }
-    catch ( std::exception& e )
-    {
-        _impossible = true;
-        return true;
-    }
-    return false;
-}
-
-void    ScalarConverter::convert( void ) {
-    if ( isImpossible() )
-        return;
-    switch ( _type ) {
-    case CHAR:
-        _c = _str[0];
-        _n = static_cast< int >( _c );
-        _f = static_cast< float >( _c );
-        _d = static_cast< double >( _c );
-        break;
-    case INT:
-        _n = std::stoi( _str );
-        _f = static_cast< float >( _n );
-        _d = static_cast< double >( _n );
-        _c = static_cast< char >( _n );
-        break;
-    case FLOAT:
-        _f = std::stof( _str );
-        _n = static_cast< int >( _f );
-        _d = static_cast< double >( _f );
-        _c = static_cast< char >( _f );
-        break;
-    case DOUBLE:
-        _d = std::stod( _str );
-        _n = static_cast< int >( _d );
-        _f = static_cast< float >( _d );
-        _c = static_cast< char >( _d );
-        break;
-    default:
-        break;
-    }
-}
-
-std::ostream&    operator<<( std::ostream& out, const ScalarConverter& rhs ) {
-    out << "char: "; rhs.printChar();
-    out << "int: "; rhs.printInt();
-    out << "float: "; rhs.printFloat();
-    out << "double: "; rhs.printDouble();
-    return out;
+	std::cout << "input: " << str << std::endl;
+	std::cout << "char: " << isPrintableChar(input) << std::endl;
+	std::cout << "int: " << isInt(input) << std::endl;
+	std::cout << "float: " << isFloat(input)<< std::endl;
+	std::cout << "double: " << isDouble(input)<< std::endl;
 }

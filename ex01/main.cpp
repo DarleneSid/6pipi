@@ -5,38 +5,22 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: dsydelny <dsydelny@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/14 21:31:03 by dsydelny          #+#    #+#             */
-/*   Updated: 2024/05/14 21:31:05 by dsydelny         ###   ########.fr       */
+/*   Created: 2024/05/19 20:54:20 by dsydelny          #+#    #+#             */
+/*   Updated: 2024/05/19 20:54:20 by dsydelny         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "Serializer.hpp"
 #include <iostream>
 
-struct Data
-{
-    std::string name;
-    int         age;
-};
+int main() {
 
-uintptr_t    serialize( Data *data ) {
-    return ( reinterpret_cast< uintptr_t >( data ) );
-}
+    Data data;
+    uintptr_t raw;
 
-Data*   deserialize( uintptr_t data ) {
-    return ( reinterpret_cast< Data* >( data ) );
-}
+        std::cout << "Original value: " << &data << std::endl;
+        raw = Serializer::serialize(&data);
+        std::cout << "Deserialize value: " << Serializer::deserialize(raw) << std::endl;
 
-int main( void )
-{
-    Data *data = new Data;
-
-    data->name = "achraf";
-    data->age = 30;
-
-    std::cout << "Name: " << deserialize( serialize( data ) )->name << std::endl;
-    std::cout << "Age: " << deserialize( serialize( data ) )->age << std::endl;
-
-    delete data;
-
-    return EXIT_SUCCESS;
+        return 0;
 }
